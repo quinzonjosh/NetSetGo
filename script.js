@@ -921,12 +921,28 @@
             statusFilter.value = filters.status;
 
             const query = filters.query.trim().toLowerCase();
+            const sortByWait = filters.status === 'sort-wait';
+
             const visible = state.players.filter(p =>
                 (!query || p.name.toLowerCase().includes(query)) &&
                 (filters.level === 'all' || p.level === filters.level) &&
-                (filters.status === 'all' || statusOf(p.id, busy) === filters.status)
+                (filters.status === 'all' || sortByWait || statusOf(p.id, busy) === filters.status)
             );
-            const filtering = !!query || filters.level !== 'all' || filters.status !== 'all';
+
+            if (sortByWait) {
+                // players with a running wait clock first (oldest start = longest wait),
+                // then players who are in a game, which have no current wait
+                const waitKey = p =>
+                    !busy.get(p.id) && p.waitingSince != null ? p.waitingSince : Infinity;
+                visible.sort((a, b) => {
+                    const ka = waitKey(a);
+                    const kb = waitKey(b);
+                    return ka === kb ? 0 : ka < kb ? -1 : 1;
+                });
+            }
+
+            // sorting isn't filtering, so it doesn't trigger the "x of y" count
+            const filtering = !!query || filters.level !== 'all' || (filters.status !== 'all' && !sortByWait);
 
             list.replaceChildren(...visible.map(p => buildItem(p, busy)));
             emptyEl.hidden = state.players.length > 0;
@@ -1051,6 +1067,7 @@
                     submitBtn.textContent = 'Save changes';
                     cancelBtn.hidden = false;
                     render();
+                    document.getElementById('add-players').open = true;
                     nameInput.focus();
                     nameInput.scrollIntoView({
                         block: 'center',
@@ -1362,10 +1379,7 @@
             li.querySelector('.court-empty').hidden = !!m;
             li.querySelector('.court-details').hidden = !m;
             li.querySelector('.court-foot').hidden = !m;
-            const delBtn = li.querySelector('[data-action="delete-court"]');
-            delBtn.disabled = !!m;
-            delBtn.title = m ? 'Complete or cancel the match before deleting this court' : 'Delete court';
-
+            
             if (m) {
                 li.querySelector('.started').textContent = formatClock(m.startedAt);
                 li.querySelector('.elapsed').dataset.started = m.startedAt;
@@ -1486,16 +1500,7 @@
                 if (!ok || court.match?.id !== matchId) return;
                 court.match = null;
                 commit();
-            } else if (action === 'delete-court' && !court.match) {
-                const ok = await confirmAction({
-                    title: `Delete Court ${court.number}?`,
-                    text: "This can't be undone.",
-                    confirmLabel: 'Delete court',
-                });
-                if (!ok || court.match || !state.courts.includes(court)) return;
-                state.courts.splice(state.courts.indexOf(court), 1);
-                commit();
-            }
+            } 
         });
 
         setInterval(tick, 1000);
