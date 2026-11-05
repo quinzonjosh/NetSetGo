@@ -1,0 +1,169 @@
+/* The shared modal and the forms that live inside it */
+.prompt-open {
+  overflow: hidden;
+}
+
+.prompt-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.prompt {
+  width: min(100%, 420px);
+  max-height: 100%;
+  overflow-y: auto;
+  display: grid;
+  gap: 12px;
+  padding: 20px;
+  color: var(--text);
+  border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.prompt h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.prompt-text,
+.prompt-note {
+  margin: 0;
+}
+
+.prompt-text {
+  overflow-wrap: anywhere;
+  white-space: pre-line; /* "\n" in text becomes a line break (no innerHTML needed) */
+}
+
+.prompt-note { color: var(--muted); }
+
+.prompt-body {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+}
+
+.prompt .form-error { margin: 0; }
+
+.prompt-icon {
+  font-size: 2.4rem;
+  line-height: 1;
+}
+
+.prompt.has-icon {
+  text-align: center;
+  justify-items: center;
+}
+
+.prompt.has-icon .prompt-text {
+  font-size: 1.05rem;
+  font-weight: 600;
+}
+
+.prompt.has-icon .prompt-actions {
+  width: 100%;
+}
+
+.prompt-actions {
+  display: grid;
+  gap: 8px;
+}
+
+.prompt-actions.row {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.prompt-actions.row .btn {
+  flex: 1 1 120px;
+}
+
+/* Stacked choices with a second line (e.g. "Team A won" + names) */
+.result-btn {
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  padding: 14px 12px;
+  text-align: center;
+  border-width: 2px;
+}
+
+.result-btn span {
+  font-size: 0.85rem;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.result-btn.team {
+  border-color: var(--team-b);
+}
+
+/* Auto-matchup editor */
+.preview-teams {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 4px 0;
+  width: 100%;
+}
+
+@media (min-width: 400px) {
+  .preview-teams { grid-template-columns: 1fr 1fr; }
+}
+
+.preview-team {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.preview-team h4 {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.preview-slot,
+.discount-field {
+  display: grid;
+  gap: 4px;
+}
+
+.preview-slot label,
+.discount-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.preview-slot select,
+.discount-field select,
+.discount-field input {
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.preview-slot select { cursor: pointer; }
+.preview-slot select:hover { border-color: var(--muted); }
+
+.preview-slot select:focus-visible,
+.discount-field :focus-visible {
+  border-color: var(--accent);
+}
+
+/* Discount form */
+.discount-form {
+  display: grid;
+  gap: 12px;
+}

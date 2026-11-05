@@ -1,0 +1,48 @@
+.match-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.match-title {
+  margin: 0;
+  min-width: 0;
+}
+
+.match-remove {
+  flex-shrink: 0;
+  padding: 5px 10px;
+  font-size: 0.85rem;
+}
+
+/* Name on its own line, then skill badge and wait time side by side */
+.match .team-players li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
+}
+
+.match .team-players li .team-name { flex-basis: 100%; }
+
+.court-assign {
+  display: grid;
+  gap: 6px;
+}
+
+.court-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.court-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.court-btn {
+  flex: 1;
+  min-width: 110px;
+}

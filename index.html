@@ -4,14 +4,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Pen</title>
-    <link rel="stylesheet" href="./style.css">
+    <title>Badminton Queue</title>
+    <link rel="stylesheet" href="./src/styles/main.css">
 </head>
 
-<body onload="if(!window.location.hash) window.location.hash='#q-sessions';">
+<body>
 
     <main>
-        <!-- Q-Sessions (Includes Players, Queue, and Courts tabs) -->
+        <!-- Q-Sessions (Players, Queue, and Courts tabs) -->
         <section class="view" data-view="q-sessions">
             <div class="tabs" role="tablist" aria-label="Q-Session sections">
                 <button class="tab" role="tab" id="tab-players" aria-controls="panel-players"
@@ -136,7 +136,7 @@
             <!-- Courts & History tab -->
             <div role="tabpanel" id="panel-courts" aria-labelledby="tab-courts" hidden>
                 <div class="page-header">
-                    <h2 class="list-title" style="font-size: 1.4rem; margin: 0;">Court management</h2>
+                    <h2 class="list-title">Court management</h2>
                     <button type="button" class="btn btn-primary btn-sm" id="court-add">+ Add court</button>
                 </div>
 
@@ -268,9 +268,23 @@
         </a>
     </nav>
 
-    <!-- Templates & Prompt remain unchanged below... -->
+    <!-- ================= Templates ================= -->
 
-    <!-- Player card -->
+    <!-- Team A vs Team B block, cloned into the match, court and history cards -->
+    <template id="teams-template">
+        <div class="match-teams">
+            <div class="team team-a">
+                <span class="team-label">Team A</span>
+                <ul class="team-players"></ul>
+            </div>
+            <span class="vs">vs</span>
+            <div class="team team-b">
+                <span class="team-label">Team B</span>
+                <ul class="team-players"></ul>
+            </div>
+        </div>
+    </template>
+
     <template id="player-item-template">
         <li class="player">
             <div class="player-top">
@@ -280,10 +294,10 @@
             <div class="player-row">
                 <span class="badge"></span>
                 <span class="slot" hidden></span>
-                    <span class="wait" title="Time waiting" hidden>
+                <span class="wait" title="Time waiting" hidden>
                     <span aria-hidden="true">⏱</span>
-                <span class="wait-time"></span>
-            </span>
+                    <span class="wait-time"></span>
+                </span>
             </div>
             <span class="player-status" hidden></span>
             <div class="player-actions">
@@ -293,29 +307,14 @@
         </li>
     </template>
 
-    <!-- Queued match card -->
     <template id="match-template">
         <li class="match">
             <div class="match-header">
                 <h3 class="match-title"></h3>
                 <button type="button" class="btn match-remove" data-action="remove"
-                    aria-label="Remove match from queue">
-                    Remove
-                </button>
+                    aria-label="Remove match from queue">Remove</button>
             </div>
-
-            <div class="match-teams">
-                <div class="team team-a">
-                    <span class="team-label">Team A</span>
-                    <ul class="team-players"></ul>
-                </div>
-                <span class="vs">vs</span>
-                <div class="team team-b">
-                    <span class="team-label">Team B</span>
-                    <ul class="team-players"></ul>
-                </div>
-            </div>
-
+            <div data-teams></div>
             <div class="court-assign">
                 <span class="court-label">Assign to court</span>
                 <div class="court-buttons"></div>
@@ -323,14 +322,11 @@
         </li>
     </template>
 
-    <!-- Court card -->
     <template id="court-template">
         <li class="court">
             <div class="court-head">
                 <strong class="court-title"></strong>
-                <div class="court-top-right">
-                    <span class="court-status"></span>
-                </div>
+                <span class="court-status"></span>
             </div>
 
             <p class="court-empty">No match on this court.</p>
@@ -340,18 +336,7 @@
                     <span>Started <strong class="started"></strong></span>
                     <span>Elapsed <strong class="elapsed"></strong></span>
                 </div>
-
-                <div class="match-teams">
-                    <div class="team team-a">
-                        <span class="team-label">Team A</span>
-                        <ul class="team-players"></ul>
-                    </div>
-                    <span class="vs">vs</span>
-                    <div class="team team-b">
-                        <span class="team-label">Team B</span>
-                        <ul class="team-players"></ul>
-                    </div>
-                </div>
+                <div data-teams></div>
             </div>
 
             <div class="court-foot">
@@ -361,31 +346,18 @@
         </li>
     </template>
 
-    <!-- Match history card -->
     <template id="history-template">
         <li class="history-item">
             <div class="history-head">
                 <strong class="history-title"></strong>
                 <span class="history-time"></span>
             </div>
-
-            <div class="match-teams">
-                <div class="team team-a">
-                    <span class="team-label"></span>
-                    <ul class="team-players"></ul>
-                </div>
-                <span class="vs">vs</span>
-                <div class="team team-b">
-                    <span class="team-label"></span>
-                    <ul class="team-players"></ul>
-                </div>
-            </div>
-
+            <div data-teams></div>
             <p class="history-draw" hidden>🤝 Draw</p>
         </li>
     </template>
 
-    <!-- In-app prompt -->
+    <!-- In-app modal (one overlay for every prompt and form) -->
     <div class="prompt-backdrop" id="prompt" hidden>
         <div class="prompt" role="dialog" aria-modal="true" aria-labelledby="prompt-title"
             aria-describedby="prompt-text">
@@ -393,11 +365,13 @@
             <h2 id="prompt-title"></h2>
             <p class="prompt-text" id="prompt-text" hidden></p>
             <p class="prompt-note" id="prompt-note" hidden></p>
+            <div class="prompt-body" id="prompt-body" hidden></div>
+            <p class="form-error" id="prompt-error" role="alert" hidden></p>
             <div class="prompt-actions" id="prompt-actions"></div>
         </div>
     </div>
 
-    <script src="./script.js"></script>
+    <script type="module" src="./src/main.js"></script>
 </body>
 
 </html>

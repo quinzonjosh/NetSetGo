@@ -1,0 +1,46 @@
+/* Team A vs Team B block (queue, courts, history) */
+.match-teams {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 8px;
+  align-items: center;
+}
+
+.vs {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.team {
+  min-width: 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.team-a { border-top: 3px solid var(--team-a); }
+.team-b { border-top: 3px solid var(--team-b); }
+
+.team-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.team-players {
+  margin-top: 6px;
+  display: grid;
+  gap: 8px;
+}
+
+.team-players li {
+  display: grid;
+  gap: 2px;
+  justify-items: start;
+}
+
+.team-name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}

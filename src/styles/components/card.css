@@ -1,0 +1,28 @@
+/* One card surface. A new card type? Add its selector to this list. */
+.court,
+.match,
+.player,
+.history-card,
+.leaderboard-card,
+.pay-card,
+.add-players,
+.bulk,
+.prompt {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.leaderboard-card,
+.pay-card,
+.history-card {
+  padding: 16px;
+}
+
+/* Cards that sit in a grid and stack their content */
+.court,
+.match {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+}

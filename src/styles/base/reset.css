@@ -1,0 +1,41 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  height: 100%;
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  min-height: 100%;
+  /* room for the fixed bottom nav */
+  padding-bottom: calc(var(--nav-h) + 16px + env(safe-area-inset-bottom, 0px));
+}
+
+main {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.view {
+  padding: 0 16px;
+}
+
+.view > h1 {
+  font-size: 1.4rem;
+  margin: 20px 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
