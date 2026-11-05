@@ -1,0 +1,60 @@
+/* List reset */
+.court-list,
+.match-list,
+.player-list,
+.history-list,
+.team-players {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Auto-fill card grids. --col sets the minimum card width. */
+.court-list,
+.match-list,
+.player-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--col, 300px), 1fr));
+  gap: 10px;
+}
+
+.list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 28px 0 10px;
+}
+
+.list-title {
+  font-size: 1.05rem;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.empty {
+  color: var(--muted);
+  margin: 12px 0;
+}
+
+/* Banners: --c sets the colour */
+.toast,
+.queue-notice {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border: 1px solid var(--c);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--c) 14%, var(--surface));
+}
+
+.toast {
+  --c: var(--beginner);
+  padding: 12px 14px;
+  font-weight: 600;
+}
+
+.queue-notice {
+  --c: var(--accent);
+  font-size: 0.9rem;
+}

@@ -1,0 +1,43 @@
+.table-wrap {
+  overflow-x: auto;
+}
+
+.leaderboard,
+.pay-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+:is(.leaderboard, .pay-table) :is(th, td) {
+  padding: var(--cell-pad, 12px) 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+:is(.leaderboard, .pay-table) th {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+:is(.leaderboard, .pay-table) .num {
+  text-align: center;
+  white-space: nowrap;
+}
+
+:is(.leaderboard, .pay-table) tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Player-name column wraps; everything else stays on one line */
+.leaderboard { --cell-pad: 14px; }
+.leaderboard td { white-space: nowrap; }
+
+.leaderboard td:nth-child(2),
+.pay-table td:first-child {
+  font-weight: 600;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}

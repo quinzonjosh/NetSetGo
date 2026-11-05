@@ -1,0 +1,300 @@
+/* ===== Add players panel ===== */
+.add-players {
+  margin-bottom: 16px;
+  border-radius: 12px;
+}
+
+.add-players > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 44px;
+  padding: 12px 16px;
+  font-weight: 600;
+  list-style: none;
+  cursor: pointer;
+}
+
+.add-players > summary::-webkit-details-marker { display: none; }
+
+.add-players > summary::after {
+  content: "▾";
+  transition: transform 0.2s ease;
+}
+
+.add-players:not([open]) > summary::after { transform: rotate(-90deg); }
+.add-players[open] > summary { border-bottom: 1px solid var(--border); }
+
+/* All the padding lives here, so the form and bulk box share the same edges */
+.add-players-body {
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.add-players-body .player-form,
+.add-players-body .bulk {
+  width: 100%;
+  max-width: 640px;
+  margin: 0;
+}
+
+/* ===== Add / edit form ===== */
+.player-form {
+  display: grid;
+  gap: 16px;
+}
+
+.field label,
+.levels legend {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  padding: 0;
+}
+
+.field input {
+  width: 100%;
+  padding: 12px 14px;
+}
+
+.levels {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.levels legend { width: 100%; }
+
+.level input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.level span {
+  display: inline-block;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.level input:checked + span {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--accent-text);
+  font-weight: 600;
+}
+
+.level input:focus-visible + span {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.form-actions .btn-primary { flex: 1; }
+
+/* ===== Bulk add ===== */
+.bulk summary {
+  padding: 12px 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.bulk-form {
+  display: grid;
+  gap: 10px;
+  padding: 0 14px 14px;
+}
+
+.bulk-form label { font-weight: 600; }
+
+.bulk-form textarea {
+  width: 100%;
+  padding: 12px 14px;
+  background: var(--bg);
+  resize: vertical;
+}
+
+.bulk-result {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ===== Search + filters ===== */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.toolbar input {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+/* ===== Player cards ===== */
+.player-list {
+  --col: 176px;
+  gap: 8px;
+}
+
+.player {
+  display: grid;
+  gap: 6px;
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.player.editing { border-color: var(--accent); }
+
+.player-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.player-top .player-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.games {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.player-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px 6px;
+  min-height: 34px;
+}
+
+/* On player cards, push the wait chip to the right edge */
+.player-row .wait { margin-left: auto; }
+
+.player-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* ===== Picking players for a match ===== */
+.slot {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.player.selectable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.player.selectable:hover { border-color: var(--muted); }
+
+.player.sel-a,
+.player.sel-b {
+  animation: pulseSelect 0.2s ease-out;
+}
+
+.player.sel-a {
+  border-color: var(--team-a);
+  box-shadow: inset 0 0 0 1px var(--team-a);
+  background: color-mix(in srgb, var(--team-a) 10%, var(--surface));
+}
+
+.player.sel-b {
+  border-color: var(--team-b);
+  box-shadow: inset 0 0 0 1px var(--team-b);
+  background: color-mix(in srgb, var(--team-b) 10%, var(--surface));
+}
+
+.player.sel-a .slot { color: var(--team-a); }
+.player.sel-b .slot { color: var(--team-b); }
+
+/* style to indicate busy players */
+/* .player.busy > :not(.player-status) { opacity: 0.55; } */
+
+@keyframes pulseSelect {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+.select-hint {
+  margin: 14px 0 0;
+  font-size: 0.9rem;
+  color: var(--muted);
+  min-height: 1.3em;
+}
+
+/* ===== Sticky bottom action bar ===== */
+.sticky-actions {
+  position: sticky;
+  bottom: calc(var(--nav-h) + 12px);
+  z-index: 50;
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 12px 16px;
+  margin: 16px -16px -16px;
+  border-top: 1px solid var(--border);
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Room so the list isn't hidden behind the sticky bar */
+#panel-players { padding-bottom: 80px; }
+
+.start-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.start-btn {
+  flex: 1;
+  padding: 14px;
+  font-size: 1rem;
+}
+
+.auto-btn {
+  height: 48px;
+  width: 48px;
+  font-size: 1.25rem;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.auto-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}

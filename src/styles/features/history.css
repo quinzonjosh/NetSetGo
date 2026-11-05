@@ -1,0 +1,72 @@
+.history-card {
+  margin-top: 24px;
+  padding: 14px;
+}
+
+.history-card .list-header { margin: 0 0 10px; }
+
+/* one card per row, full width */
+.history-list {
+  display: grid;
+  gap: 8px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.history-head {
+  flex: 0 0 120px;
+  display: grid;
+  gap: 2px;
+}
+
+.history-time {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.history-item .match-teams {
+  flex: 1;
+  min-width: 0;
+}
+
+.history-item .team { background: var(--surface); }
+
+.history-item .team.winner {
+  background: color-mix(in srgb, var(--beginner) 14%, var(--surface));
+}
+
+.history-item .team.winner .team-label { color: var(--text); }
+
+.history-item .team-players {
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.history-draw {
+  flex: none;
+  margin: 0;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* on narrow screens, drop the match number above the teams */
+@media (max-width: 600px) {
+  .history-item { flex-wrap: wrap; }
+
+  .history-head {
+    flex: 1 1 100%;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .history-item .match-teams { flex-basis: 100%; }
+}

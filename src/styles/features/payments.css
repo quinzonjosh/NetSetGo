@@ -1,0 +1,68 @@
+.pay-card + .pay-card { margin-top: 16px; }
+.pay-card > .list-title { margin-bottom: 12px; }
+
+.fee-field {
+  display: grid;
+  gap: 6px;
+  max-width: 280px;
+  font-weight: 600;
+}
+
+/* Summary boxes */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.stat-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  align-content: start;
+  min-width: 0;
+  padding: 12px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+.stat-value {
+  font-size: 1.4rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-value.positive { color: var(--beginner); }
+.stat-value.negative { color: var(--danger); }
+
+.stat-note {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.discount-actions { margin: 12px 0; }
+
+/* Player payments table (shared table rules live in components/table.css) */
+.pay-table .actions-col { text-align: right; }
+
+.pay-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pay-tag {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--beginner);
+  white-space: nowrap;
+}

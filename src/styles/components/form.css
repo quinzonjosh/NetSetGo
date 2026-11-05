@@ -1,0 +1,66 @@
+/* Shared text-field look */
+.field input,
+.toolbar input,
+.toolbar select,
+.bulk-form textarea,
+.preview-slot select,
+.discount-field select,
+.discount-field input {
+  font: inherit;
+  padding: 10px 12px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.form-error {
+  margin: 6px 0 0;
+  color: var(--danger);
+  font-size: 0.85rem;
+}
+
+/* Money inputs (₱ prefix) */
+.money-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 0 12px;
+  font-weight: 400;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.money-input:focus-within {
+  border-color: var(--accent);
+}
+
+.money-input > span {
+  color: var(--muted);
+}
+
+.money-input input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  padding: 12px 0;
+  font: inherit;
+  color: var(--text);
+  background: none;
+  border: 0;
+  outline: 0;
+}
+
+/* Hide number input spinners */
+.money-input input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.money-input input[type="number"]::-webkit-outer-spin-button,
+.money-input input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
