@@ -19,6 +19,12 @@
 
 .court-title { font-size: 1.05rem; }
 
+.court-head-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .court-empty {
   margin: 0;
   color: var(--muted);

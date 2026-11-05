@@ -19,6 +19,7 @@ export function initCourts() {
     const m = court.match;
     li.dataset.number = court.number;
     li.querySelector('.court-title').textContent = `Court ${court.number}`;
+    li.querySelector('[data-action="delete"]').setAttribute('aria-label', `Delete Court ${court.number}`);
 
     const status = li.querySelector('.court-status');
     status.textContent = m ? 'Occupied' : 'Available';
@@ -111,14 +112,34 @@ export function initCourts() {
   });
 
   list.addEventListener('click', async e => {
-    const btn = e.target.closest('[data-action]');
-    if (!btn || btn.disabled) return;
-    const court = state.courts.find(c => c.number === Number(btn.closest('.court').dataset.number));
-    if (!court?.match) return;
+  const btn = e.target.closest('[data-action]');
+  if (!btn || btn.disabled) return;
+  const court = state.courts.find(c => c.number === Number(btn.closest('.court').dataset.number));
+  if (!court) return;
+  const { action } = btn.dataset;
 
-    if (btn.dataset.action === 'complete') {
+  if (action === 'delete') {
+    const matchId = court.match?.id;
+    const ok = await confirmAction({
+      title: `Delete Court ${court.number}?`,
+      text: court.match
+        ? "A match is in progress on this court. It will be cancelled, no games are counted, and the players become available again. This can't be undone."
+        : "This can't be undone.",
+      confirmLabel: 'Delete court',
+      cancelLabel: 'Keep court',
+    });
+    // abort if the court was removed, or its match changed, while the prompt was open
+    if (!ok || !state.courts.includes(court) || court.match?.id !== matchId) return;
+      state.courts = state.courts.filter(c => c !== court);
+      commit();
+      return;
+    }
+
+    if (!court.match) return;
+
+    if (action === 'complete') {
       completeMatch(court); // the match is only cleared once a result is picked
-    } else if (btn.dataset.action === 'cancel') {
+    } else if (action === 'cancel') {
       const matchId = court.match.id;
       const ok = await confirmAction({
         title: `Cancel the match on Court ${court.number}?`,
