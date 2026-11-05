@@ -1,6 +1,6 @@
 // localStorage only. One versioned key, debounced writes, and a one-time
 // migration from the old five-key format.
-import { STORAGE_KEY, LEGACY_KEYS, DEFAULT_COURTS, SAVE_DELAY_MS } from './constants.js';
+import { STORAGE_KEY, LEGACY_KEYS, DEFAULT_COURTS, SAVE_DELAY_MS, GENDER_BY_ID } from './constants.js';
 
 function readJSON(key, fallback) {
   try {
@@ -37,6 +37,7 @@ export function loadState(state) {
   const now = Date.now();
   players.forEach(p => {
     p.discount = Math.max(0, Number(p.discount) || 0);
+    p.gender = GENDER_BY_ID[p.gender] ? p.gender : null;
     p.waitingSince ??= session.started ? now : null;
   });
 

@@ -5,7 +5,7 @@ import { state, commit, onChange, startSession, endSession, enqueueMatch } from 
 import { playerById, namesOf, busyMap, statusOf, availablePlayers } from '../../core/selectors.js';
 import { $, cloneTemplate, flash } from '../../lib/dom.js';
 import { confirmAction } from '../../ui/modal.js';
-import { setLevelBadge } from '../../ui/team-list.js';
+import { setLevelBadge, setGenderChip } from '../../ui/team-list.js';
 import { setWaitText } from '../../ui/ticker.js';
 import { initPlayerForm } from './player-form.js';
 import { suggestMatchup, openMatchEditor } from './auto-match.js';
@@ -27,16 +27,18 @@ export function initPlayers() {
   const autoBtn = $('auto-match-btn');
   const addPanel = $('add-players');
   const sortSelect = $('sort-players');
+  const genderFilter = $('filter-gender');
+  
 
   let selected = []; // player ids in the order they were tapped
   let notice = null; // { text, count }: message shown in place of the hint
   let collapsedOnce = false;
-  const filters = { query: '', level: 'all', status: 'all', sort: 'default' };
+  const filters = { query: '', level: 'all', gender: 'all', status: 'all', sort: 'default' };
 
   const form = initPlayerForm({ onAdded: resetFilters, onEditingChange: render });
 
   function resetFilters() {
-    Object.assign(filters, { query: '', level: 'all', status: 'all' });
+    Object.assign(filters, { query: '', level: 'all', gender: 'all', status: 'all' });
     searchInput.value = '';
     levelFilter.value = 'all';
     statusFilter.value = 'all';
@@ -59,6 +61,7 @@ export function initPlayers() {
     nameEl.title = player.name;
     li.querySelector('.games').textContent = `Games: ${player.games ?? 0}`;
     setLevelBadge(li.querySelector('.badge'), player.level);
+    setGenderChip(li.querySelector('.gender'), player.gender);
 
     // Wait chip: only while the session is running, and hidden while on a court
     const waitEl = li.querySelector('.wait');
@@ -114,6 +117,7 @@ export function initPlayers() {
     const visible = state.players.filter(p =>
       (!query || p.name.toLowerCase().includes(query)) &&
       (filters.level === 'all' || p.level === filters.level) &&
+      (filters.gender === 'all' || (p.gender ?? 'unset') === filters.gender) &&
       (filters.status === 'all' || statusOf(p.id, busy) === filters.status));
 
     // players with a running wait clock first (oldest start = longest wait), then players in a game
@@ -127,7 +131,7 @@ export function initPlayers() {
     };
     if (sorters[filters.sort]) visible.sort(sorters[filters.sort]); // ties keep added order
 
-    const filtering = !!query || filters.level !== 'all' || filters.status !== 'all';
+    const filtering = !!query || filters.level !== 'all' || filters.gender !== 'all' || filters.status !== 'all';
     return { visible, filtering };
   }
 
@@ -296,6 +300,7 @@ export function initPlayers() {
   // ---- search + filters ----
   searchInput.addEventListener('input', () => { filters.query = searchInput.value; render(); });
   levelFilter.addEventListener('change', () => { filters.level = levelFilter.value; render(); });
+  genderFilter.addEventListener('change', () => { filters.gender = genderFilter.value; render(); });
   statusFilter.addEventListener('change', () => { filters.status = statusFilter.value; render(); });
   sortSelect.addEventListener('change', () => { filters.sort = sortSelect.value; render(); });
   filterReset.addEventListener('click', () => {

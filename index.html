@@ -40,7 +40,7 @@
                             <fieldset class="levels">
                                 <legend>Skill level</legend>
                                 <label class="level">
-                                    <input type="radio" name="level" value="beginner" checked>
+                                    <input type="radio" name="level" value="beginner">
                                     <span>Beginner</span>
                                 </label>
                                 <label class="level">
@@ -57,6 +57,18 @@
                                 </label>
                             </fieldset>
 
+                            <fieldset class="levels">
+                                <legend>Gender</legend>
+                                <label class="level">
+                                    <input type="radio" name="gender" value="male">
+                                    <span>Male</span>
+                                </label>
+                                <label class="level">
+                                    <input type="radio" name="gender" value="female">
+                                    <span>Female</span>
+                                </label>
+                            </fieldset>
+
                             <div class="form-actions">
                                 <button type="submit" class="btn btn-primary" id="player-submit">Add player</button>
                                 <button type="button" class="btn" id="player-cancel" hidden>Cancel</button>
@@ -65,13 +77,36 @@
 
                         <details class="bulk" id="bulk">
                             <summary>Add many players at once</summary>
+
+                            <!-- Step 1: paste -->
                             <form class="bulk-form" id="bulk-form">
                                 <label for="bulk-text">Paste or type your list</label>
                                 <textarea id="bulk-text" rows="6"
-                                    placeholder="Maria Santos - advanced&#10;John (beginner), Ana, Ben&#10;Intermediate: Carlo, Diego"></textarea>
-                                <button type="submit" class="btn btn-primary">Add all players</button>
+                                    placeholder="Women: Maria Santos (advanced), Ana&#10;Men: Carlo - intermediate, Ben&#10;John (M, beginner)"></textarea>
+                                <button type="submit" class="btn btn-primary">Review players</button>
                                 <p class="bulk-result" id="bulk-result" role="status"></p>
                             </form>
+
+                            <!-- Step 2: review -->
+                            <div class="bulk-review" id="bulk-review" hidden>
+                                <p class="bulk-review-hint">Fill in anything marked ⚠. Incomplete or duplicate rows are skipped.</p>
+                                <div class="table-wrap">
+                                    <table class="review-table">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Name</th>
+                                                <th scope="col">Gender</th>
+                                                <th scope="col">Level</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="bulk-review-body"></tbody>
+                                    </table>
+                                </div>
+                                <div class="form-actions">
+                                    <button type="button" class="btn" id="bulk-back">Back</button>
+                                    <button type="button" class="btn btn-primary" id="bulk-confirm">Add players</button>
+                                </div>
+                            </div>
                         </details>
                     </div>
                 </details>
@@ -93,6 +128,12 @@
                         <option value="intermediate">Intermediate</option>
                         <option value="upper-intermediate">Upper intermediate</option>
                         <option value="advanced">Advanced</option>
+                    </select>
+                    <select id="filter-gender" aria-label="Filter by gender">
+                        <option value="all">All genders</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                        <option value="unset">Not set</option>
                     </select>
                     <select id="filter-status" aria-label="Filter by status" hidden>
                         <option value="all">All statuses</option>
@@ -298,6 +339,7 @@
             </div>
             <div class="player-row">
                 <span class="badge"></span>
+                <span class="gender"></span>
                 <span class="slot" hidden></span>
                 <span class="wait" title="Time waiting" hidden>
                     <span aria-hidden="true">⏱</span>

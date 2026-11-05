@@ -28,16 +28,17 @@
   color: var(--muted);
 }
 
-.team-players {
-  margin-top: 6px;
-  display: grid;
-  gap: 8px;
+.team-players li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 8px;
 }
 
-.team-players li {
-  display: grid;
-  gap: 2px;
-  justify-items: start;
+.team-name {
+  flex-basis: 100%;
+  font-weight: 600;
+  overflow-wrap: anywhere;
 }
 
 .team-name {

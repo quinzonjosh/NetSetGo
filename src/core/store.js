@@ -1,7 +1,7 @@
 // The single source of truth, plus the actions that change it.
 //
-// players: [{ id, name, level, games, wins, losses, draws, discount, payment, addedAt, waitingSince }]
-//   payment: null | { method: 'cash' | 'digital', amount, paidAt }
+// players: [{ id, name, level, gender, games, wins, ... }]   gender: 'male' | 'female' | null
+// payment: null | { method: 'cash' | 'digital', amount, paidAt }
 // session:  { started, counter, matches: [{ id, no, a: [id, id], b: [id, id], createdAt }] }
 // courts:   [{ number, match: null | { id, no, a, b, startedAt } }]
 // history:  [{ id, no, court, startedAt, endedAt, a: [names], b: [names], result: 'a' | 'b' | 'draw' }]
@@ -39,11 +39,12 @@ export function commit() {
 
 // ---- actions (they change state; callers decide when to commit) ----
 
-export function makePlayer(name, level) {
+export function makePlayer(name, level, gender) {
   return {
     id: newId(),
     name,
     level,
+    gender,
     games: 0,
     wins: 0,
     losses: 0,

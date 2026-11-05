@@ -134,12 +134,12 @@
 /* ===== Search + filters + sort ===== */
 .toolbar {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 10px;
 }
 
-/* phone: search on its own row, dropdowns share the next row */
+/* phone: search on its own row, dropdowns in two columns */
 .toolbar input {
   grid-column: 1 / -1;
   min-width: 0;
@@ -151,9 +151,9 @@
 }
 
 /* iPad and up: one row */
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .toolbar {
-    grid-template-columns: minmax(200px, 1fr) repeat(3, auto);
+    grid-template-columns: minmax(180px, 1.4fr) repeat(4, minmax(0, 1fr));
   }
 
   .toolbar input {
@@ -207,7 +207,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 4px 6px;
   min-height: 34px;
 }
@@ -314,4 +314,56 @@
 
 .auto-btn:hover:not(:disabled) {
   background: color-mix(in srgb, var(--accent) 8%, var(--surface));
+}
+
+/* ===== Bulk review step ===== */
+.bulk-review {
+  display: grid;
+  gap: 10px;
+  padding: 0 14px 14px;
+}
+
+.bulk-review-hint {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.review-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.review-table th,
+.review-table td {
+  padding: 8px 6px;
+  text-align: left;
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border);
+}
+
+.review-table th {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.review-table td:first-child {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.review-table select {
+  width: 100%;
+  min-width: 100px;
+}
+
+.review-table select.missing {
+  border-color: var(--intermediate);
+}
+
+.review-note {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--danger);
 }

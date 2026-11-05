@@ -24,3 +24,9 @@ export const LEVELS = [
 export const DEFAULT_LEVEL = LEVELS[0].id;
 export const LEVEL_LABELS = Object.fromEntries(LEVELS.map(l => [l.id, l.label]));
 export const LEVEL_RANK = Object.fromEntries(LEVELS.map((l, i) => [l.id, i + 1]));
+
+export const GENDERS = [
+  { id: 'male', label: 'Male', symbol: '♂' },
+  { id: 'female', label: 'Female', symbol: '♀' },
+];
+export const GENDER_BY_ID = Object.fromEntries(GENDERS.map(g => [g.id, g]));

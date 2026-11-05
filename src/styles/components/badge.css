@@ -75,3 +75,19 @@
 .wait.long {
   color: var(--intermediate);
 }
+
+.gender {
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--muted);
+}
+
+/* older players with no gender yet */
+.gender.missing {
+  font-size: 0.7rem;
+  color: var(--intermediate);
+  cursor: pointer;
+  text-decoration: underline;
+}
+

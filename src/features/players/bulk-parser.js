@@ -1,6 +1,6 @@
 // Pure text -> players. No DOM, no state: easy to unit test.
-// Accepts numbered lists, bullets, commas, "Level: names" lines and header lines.
-import { DEFAULT_LEVEL } from '../../core/constants.js';
+// Reads a name, a skill level and a gender from each line. Anything it can't
+// find comes back as null, and the review step asks the user to fill it in.
 
 const LEVEL_WORDS = {
   beginner: ['beginners?', 'beg', 'newbies?', 'novices?', 'rookies?', 'basic', 'starter', 'lvl\\s*1', 'level\\s*1'],
@@ -10,10 +10,20 @@ const LEVEL_WORDS = {
   advanced: ['advanced?', 'adv', 'pro', 'experts?', 'lvl\\s*4', 'level\\s*4'],
 };
 
-const LEVEL_PATTERNS = Object.entries(LEVEL_WORDS).map(([level, words]) => [
-  level,
-  new RegExp(`(?<![\\p{L}\\d])(?:${words.join('|')})(?![\\p{L}\\d])`, 'iu'),
-]);
+const GENDER_WORDS = {
+  male: ['males?', 'man', 'men', 'boys?'],
+  female: ['females?', 'woman', 'women', 'girls?', 'ladies', 'lady'],
+};
+
+const wordRegex = words => new RegExp(`(?<![\\p{L}\\d])(?:${words.join('|')})(?![\\p{L}\\d])`, 'iu');
+const toPatterns = table => Object.entries(table).map(([id, words]) => [id, wordRegex(words)]);
+
+const LEVEL_PATTERNS = toPatterns(LEVEL_WORDS);
+const GENDER_PATTERNS = toPatterns(GENDER_WORDS);
+
+// A lone "M" or "F" only counts in brackets "(M)", between dashes "Maria - F - adv",
+// or on its own. This keeps initials like "Maria M" or names like "Fred" safe.
+const SINGLE_GENDER = /(?:[(\[]\s*|\s[-–—/]\s*|^\s*)([mf])(?=\s*(?:[)\]]|[-–—/](?:\s|$)|$))/i;
 
 const PREFIX = /^\s*(?:[-*•·>]+|\d+\s*[.)\]:-])\s*/; // leading bullet or number: "- ", "1. ", "2) "
 const SEPARATORS = /\s*[,;|]\s*|\s+&\s+|\s+and\s+/i; // , ; | & and
@@ -27,10 +37,24 @@ function findLevel(text) {
   return null;
 }
 
-// Returns the level when `text` is nothing but a level word ("Advanced", "lvl 3"), else null.
-function levelOnly(text) {
-  const found = findLevel(text);
-  return found && !hasLetter(text.replace(found.match, '')) ? found.level : null;
+function findGender(text) {
+  for (const [gender, re] of GENDER_PATTERNS) {
+    const m = text.match(re);
+    if (m) return { gender, match: m[0] };
+  }
+  const s = text.match(SINGLE_GENDER);
+  return s ? { gender: s[1].toLowerCase() === 'm' ? 'male' : 'female', match: s[0] } : null;
+}
+
+// If `text` is nothing but level and/or gender words ("Advanced", "Women", "Advanced Men"),
+// returns { level, gender }. Otherwise null.
+function headerOnly(text) {
+  let rest = text;
+  const lv = findLevel(rest);
+  if (lv) rest = rest.replace(lv.match, ' ');
+  const gd = findGender(rest);
+  if (gd) rest = rest.replace(gd.match, ' ');
+  return (lv || gd) && !hasLetter(rest) ? { level: lv?.level ?? null, gender: gd?.gender ?? null } : null;
 }
 
 function cleanName(raw) {
@@ -47,10 +71,16 @@ function cleanName(raw) {
   return name;
 }
 
-/** text -> [{ name, level }] */
+/** text -> [{ name, level | null, gender | null }] */
 export function parseBulkPlayers(text) {
   const out = [];
-  let currentLevel = DEFAULT_LEVEL;
+  let currentLevel = null;
+  let currentGender = null;
+
+  const applyHeader = head => {
+    if (head.level) currentLevel = head.level;
+    if (head.gender) currentGender = head.gender;
+  };
 
   for (const raw of text.split(/\r?\n/)) {
     const line = raw.replace(PREFIX, '').trim();
@@ -60,27 +90,48 @@ export function parseBulkPlayers(text) {
     const colon = line.indexOf(':');
 
     if (colon > 0) {
-      // "Intermediate: Caryl, John" -> sets the level for this and following lines
-      const level = levelOnly(line.slice(0, colon).trim());
-      if (level) {
-        currentLevel = level;
+      // "Advanced Men: Carlo, Diego" -> sets level/gender for this and following lines
+      const head = headerOnly(line.slice(0, colon).trim());
+      if (head) {
+        applyHeader(head);
         namesPart = line.slice(colon + 1).trim();
       }
     } else {
-      // a standalone header like "Advanced" only changes the level
-      const level = levelOnly(line.replace(/[:\-–—=*#()[\]]+/g, ' ').trim());
-      if (level) {
-        currentLevel = level;
+      // a standalone header like "Women" or "Advanced" only changes the current level/gender
+      const head = headerOnly(line.replace(/[:\-–—=*#()[\]]+/g, ' ').trim());
+      if (head) {
+        applyHeader(head);
         continue;
       }
     }
 
+    let prev = null;
     for (const seg of namesPart.split(SEPARATORS)) {
-      const found = findLevel(seg);
-      const name = cleanName(found ? seg.replace(found.match, ' ') : seg);
-      if (!hasLetter(name)) continue;
-      out.push({ name: name.slice(0, 40), level: found ? found.level : currentLevel });
+      const lv = findLevel(seg);
+      let rest = lv ? seg.replace(lv.match, ' ') : seg;
+      const gd = findGender(rest);
+      if (gd) rest = rest.replace(gd.match, ' ');
+      const name = cleanName(rest);
+
+      if (!hasLetter(name)) {
+        // a lone tag ("Maria, F, beginner") applies to the previous name on the line
+        if (prev) {
+          if (lv && !prev.hasLevel) Object.assign(prev, { level: lv.level, hasLevel: true });
+          if (gd && !prev.hasGender) Object.assign(prev, { gender: gd.gender, hasGender: true });
+        }
+        continue;
+      }
+
+      prev = {
+        name: name.slice(0, 40),
+        level: lv?.level ?? currentLevel,
+        gender: gd?.gender ?? currentGender,
+        hasLevel: !!lv,
+        hasGender: !!gd,
+      };
+      out.push(prev);
     }
   }
-  return out;
+
+  return out.map(({ name, level, gender }) => ({ name, level, gender }));
 }
