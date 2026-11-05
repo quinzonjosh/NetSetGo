@@ -131,17 +131,34 @@
   color: var(--muted);
 }
 
-/* ===== Search + filters ===== */
+/* ===== Search + filters + sort ===== */
 .toolbar {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 8px;
   margin-bottom: 10px;
 }
 
+/* phone: search on its own row, dropdowns share the next row */
 .toolbar input {
-  flex: 1 1 200px;
+  grid-column: 1 / -1;
   min-width: 0;
+}
+
+.toolbar select {
+  width: 100%;
+  min-width: 0;
+}
+
+/* iPad and up: one row */
+@media (min-width: 640px) {
+  .toolbar {
+    grid-template-columns: minmax(200px, 1fr) repeat(3, auto);
+  }
+
+  .toolbar input {
+    grid-column: auto;
+  }
 }
 
 /* ===== Player cards ===== */

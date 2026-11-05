@@ -26,11 +26,12 @@ export function initPlayers() {
   const filterReset = $('filter-reset');
   const autoBtn = $('auto-match-btn');
   const addPanel = $('add-players');
+  const sortSelect = $('sort-players');
 
   let selected = []; // player ids in the order they were tapped
   let notice = null; // { text, count }: message shown in place of the hint
   let collapsedOnce = false;
-  const filters = { query: '', level: 'all', status: 'all' };
+  const filters = { query: '', level: 'all', status: 'all', sort: 'default' };
 
   const form = initPlayerForm({ onAdded: resetFilters, onEditingChange: render });
 
@@ -109,25 +110,24 @@ export function initPlayers() {
 
   function visiblePlayers(busy) {
     const query = filters.query.trim().toLowerCase();
-    const sortByWait = filters.status === 'sort-wait';
 
     const visible = state.players.filter(p =>
       (!query || p.name.toLowerCase().includes(query)) &&
       (filters.level === 'all' || p.level === filters.level) &&
-      (filters.status === 'all' || sortByWait || statusOf(p.id, busy) === filters.status));
+      (filters.status === 'all' || statusOf(p.id, busy) === filters.status));
 
-    if (sortByWait) {
-      // players with a running wait clock first (oldest start = longest wait), then players in a game
-      const waitKey = p => (!busy.get(p.id) && p.waitingSince != null ? p.waitingSince : Infinity);
-      visible.sort((a, b) => {
-        const ka = waitKey(a);
-        const kb = waitKey(b);
-        return ka === kb ? 0 : ka < kb ? -1 : 1;
-      });
-    }
+    // players with a running wait clock first (oldest start = longest wait), then players in a game
+    const waitKey = p => (!busy.get(p.id) && p.waitingSince != null ? p.waitingSince : Infinity);
+    const cmp = (x, y) => (x === y ? 0 : x < y ? -1 : 1);
 
-    // sorting isn't filtering, so it doesn't trigger the "x of y" count
-    const filtering = !!query || filters.level !== 'all' || (filters.status !== 'all' && !sortByWait);
+    const sorters = {
+      'games-asc': (a, b) => (a.games ?? 0) - (b.games ?? 0),
+      'games-desc': (a, b) => (b.games ?? 0) - (a.games ?? 0),
+      'wait-desc': (a, b) => cmp(waitKey(a), waitKey(b)),
+    };
+    if (sorters[filters.sort]) visible.sort(sorters[filters.sort]); // ties keep added order
+
+    const filtering = !!query || filters.level !== 'all' || filters.status !== 'all';
     return { visible, filtering };
   }
 
@@ -297,6 +297,7 @@ export function initPlayers() {
   searchInput.addEventListener('input', () => { filters.query = searchInput.value; render(); });
   levelFilter.addEventListener('change', () => { filters.level = levelFilter.value; render(); });
   statusFilter.addEventListener('change', () => { filters.status = statusFilter.value; render(); });
+  sortSelect.addEventListener('change', () => { filters.sort = sortSelect.value; render(); });
   filterReset.addEventListener('click', () => {
     resetFilters();
     render();
