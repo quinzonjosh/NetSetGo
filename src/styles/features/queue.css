@@ -46,3 +46,13 @@
   flex: 1;
   min-width: 110px;
 }
+
+.tab .count {
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.tab[aria-selected="true"] .count {
+  background: var(--accent);
+  color: var(--accent-text);
+}

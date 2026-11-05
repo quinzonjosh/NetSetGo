@@ -8,6 +8,7 @@ export function initQueue() {
   const emptyEl = $('queue-empty');
   const countEl = $('match-count');
   const noticeEl = $('queue-notice');
+  const badgeEl = $('queue-badge');
 
   function hasPlayerAlreadyInGame(match) {
     const playingIds = new Set();
@@ -68,6 +69,8 @@ export function initQueue() {
     list.replaceChildren(...matches.map(buildMatch));
     emptyEl.hidden = matches.length > 0;
     countEl.textContent = matches.length;
+    badgeEl.textContent = matches.length;
+    badgeEl.hidden = matches.length === 0; // only show when something is queued
   }
 
   list.addEventListener('click', e => {
